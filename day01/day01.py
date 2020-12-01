@@ -29,7 +29,7 @@ def find_combinations(values, length, function):
 
 
 @app.command()
-def expense_report_2(input_file: str):
+def expense_report_1(input_file: str):
     """
     Find the combination of two numbers in the input for which a + b == 2020.
     The function prints the product of these two numbers, i.e. a*b.
