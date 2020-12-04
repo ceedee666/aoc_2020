@@ -111,7 +111,7 @@ def part1(input_file: str):
 def part2(input_file: str):
     passports = puzzle_input(input_file)
     passports = map(lambda p: check_required_fields(p), passports)
-    passports = list(filter(lambda p: p["valid"], passports))
+    passports = filter_valid_passports(passports) 
     passports = map(lambda p: check_field_constraints(p), passports)
     valid_passports = filter_valid_passports(passports)
 
