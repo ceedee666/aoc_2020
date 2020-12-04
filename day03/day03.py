@@ -25,13 +25,9 @@ def calculate_coordinates(x_steps, y_steps, toboggan_map):
                 enumerate(range(0, len(toboggan_map), x_steps))))
 
 
-def is_tree_at_position(x, y, toboggan_map):
-    return toboggan_map[x][y] == TREE
-
-
 def count_trees(x_steps, y_steps, toboggan_map):
     count = reduce(
-            lambda s, c: s + 1 if is_tree_at_position(c[0], c[1], toboggan_map) else s,
+            lambda s, c: s + 1 if toboggan_map[c[0]][c[1]] == TREE else s,
             calculate_coordinates(x_steps, y_steps, toboggan_map),
             0)
     return count
@@ -48,11 +44,8 @@ def part1(input_file: str):
 def part2(input_file: str):
     toboggan_map = read_input_file(input_file)
 
-    result = count_trees(1, 1, toboggan_map)
-    result *= count_trees(1, 3, toboggan_map)
-    result *= count_trees(1, 5, toboggan_map)
-    result *= count_trees(1, 7, toboggan_map)
-    result *= count_trees(2, 1, toboggan_map)
+    slopes = [(1, 1), (1, 3), (1, 5), (1, 7), (2, 1)]
+    result = reduce(lambda r, s: r * count_trees(s[0], s[1], toboggan_map), slopes, 1)
 
     print(f"The product of the number of trees on the trajectories is {result}")
 
