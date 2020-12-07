@@ -1,5 +1,4 @@
 from pathlib import Path
-from functools import reduce
 from collections import defaultdict
 import typer
 
@@ -54,6 +53,10 @@ def all_bags_containing(color, reverse_content_map):
     return all_bags
 
 
+def sum_contained_bags(color, content_map):
+    contained = [sum_contained_bags(c, content_map) * content_map[color][c] for c in content_map[color]]
+    return sum(contained) + sum(content_map[color].values())
+
 
 @app.command()
 def part1(input_file: str):
@@ -61,6 +64,14 @@ def part1(input_file: str):
     bag_colors = set(all_bags_containing("shiny gold", reverse_content_map))
 
     print(f"{len(bag_colors)} bags can contain at least on shiny gold bag.")
+
+
+@app.command()
+def part2(input_file: str):
+    content_map, _ = parse_input(read_input_file(input_file))
+    s = sum_contained_bags("shiny gold", content_map)
+
+    print(f"The shiny gold bag contains {s} other bags.")
 
 
 if __name__ == "__main__":

@@ -5,20 +5,22 @@ This solution is written in python.
 The following libraries are used to implement the solution::
 * Typer (https://typer.tiangolo.com/) to generate a nice command line interface
 * pathlib (https://docs.python.org/3/library/pathlib.html) to work with file paths
-* functools for the reduce function
+* collections to use the defaultdict
 
 === Idea
 
-The main idea today is to use sets. The first part can be solved using
-the union operation for sets, the second using the intersection operation.
+The main idea today is to use `dict`s to represent which bags are contained in
+which other bags. I created two dicts. One to represent which bags contain which other bags. 
+And one to represent the reverse relation.
 
+I used two recursive functions to solve the two parts of the puzzle.
 === What I learned
 
-I learned that the set operation in python like `union` and `intersection`
-can take a iterable as input. Together with the `*` operator this enable calling 
-these functions e.g. with a list of sets.
+I use some list comprehension in this solution. Unfortunately, this time my solution is much more
+imperative then on the previous days. One of my goals is to practice some functional programming 
+but this didn't work that well today. Seems I need more practice :D
 
 === How to run
 
 Run using:
-`$ python day06.py --help`
+`$ python day07.py --help`
