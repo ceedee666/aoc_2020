@@ -23,29 +23,34 @@ def parse_input(lines):
 def run_instructions(instructions):
     accumulator = 0
     instruction_pointer = 0
+    infinite_loop = False
 
-    current_instruction = instructions[instruction_pointer]
+    while instruction_pointer < len(instructions) \
+            and not infinite_loop:
+      
+        instructions[instruction_pointer]["execution_count"] += 1
+        
+        if instructions[instruction_pointer]["execution_count"] <= 1:
 
-    while current_instruction["execution_count"] == 0:
-        current_instruction["execution_count"] += 1
+            operation = instructions[instruction_pointer]["operation"]
         
-        operation = current_instruction["operation"]
+            if operation == "nop":
+                instruction_pointer += 1
+            elif operation == "jmp":
+                instruction_pointer += instructions[instruction_pointer]["value"]
+            elif operation == "acc":
+                accumulator += instructions[instruction_pointer]["value"]
+                instruction_pointer += 1
         
-        if operation == "nop":
-            instruction_pointer += 1
-        elif operation == "jmp":
-            instruction_pointer += current_instruction["value"]
-        elif operation == "acc":
-            accumulator += current_instruction["value"]
-            instruction_pointer += 1
-        
-        current_instruction = instructions[instruction_pointer]
-    return accumulator
+        else:
+            infinite_loop = True
+            
+    return accumulator, infinite_loop
 
 
 @app.command()
 def part1(input_file: str):
-    accumulator = run_instructions(parse_input(read_input_file(input_file)))
+    accumulator, _ = run_instructions(parse_input(read_input_file(input_file)))
     print(f"The value of the accumulator is {accumulator}")
 
 
