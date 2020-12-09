@@ -27,9 +27,9 @@ def check_validity(numbers, length):
 
 
 def all_sublists(numbers, min_size=2):
-    return [numbers[start:end] 
-            for start in range(len(numbers)) 
-            for end in range(start+1, len(numbers)+1)]
+    return [numbers[start:end]
+            for start in range(len(numbers))
+            for end in range(start + min_size, len(numbers)+1)]
 
 
 @app.command()
@@ -47,12 +47,6 @@ def part2(input_file: str, invalid_number: int):
     weakness = min(weaknesses[0]) + max(weaknesses[0])
 
     print(f"The encryption weakness is {weakness}.")
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
