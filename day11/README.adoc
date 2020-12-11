@@ -9,6 +9,7 @@ The following libraries are used to implement the solution::
 * the itertool library
 * the collections library
 
+This puzzle took me a lot longer then it probably should have and my code turned out somewhat messy :(
 === Idea
 
 Implement the rules and execute them step by step. 
