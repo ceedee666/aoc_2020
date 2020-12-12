@@ -16,32 +16,45 @@ def read_input_file(input_file_path):
     return list(map(lambda l: (l[0], int(l[1:])), lines))
 
 
+def move(pos, step):
+    operation, dist = step
+
+    if operation in "WE":
+        if operation == "W":
+            dist *= -1
+        new_pos = (pos[0], pos[1] + dist)
+
+    if operation in "NS":
+        if operation == "S":
+            dist *= -1
+        new_pos = (pos[0] + dist, pos[1])
+
+    return new_pos
+
+
+def turn(direction, step):
+    operation, dist = step
+
+    if operation in "RL":
+        if operation == "L":
+            dist *= -1
+        dir_index = DIRECTIONS.index(direction)
+        new_dir_index = (dir_index + dist // 90) % len(DIRECTIONS)
+        return DIRECTIONS[new_dir_index]
+
+
 def move_ship(ship, step):
-    move, dist = step
     new_ship = dict()
 
-    if move == "F":
-        move = ship["dir"]
+    if step[0] == "F":
+        step = (ship["dir"], step[1])
 
-    if move in "WE":
-        if move == "W":
-            dist *= -1
-        new_ship["pos"] = (ship["pos"][0], ship["pos"][1] + dist)
+    if step[0] in DIRECTIONS:
+        new_ship["pos"] = move(ship["pos"], step)
         new_ship["dir"] = ship["dir"]
-
-    if move in "NS":
-        if move == "S":
-            dist *= -1
-        new_ship["pos"] = (ship["pos"][0] + dist, ship["pos"][1])
-        new_ship["dir"] = ship["dir"]
-
-    if move in "RL":
-        if move == "L":
-            dist *= -1
-        dir_index = DIRECTIONS.index(ship["dir"])
-        new_dir_index = (dir_index + dist // 90) % len(DIRECTIONS)
+    else:
         new_ship["pos"] = ship["pos"]
-        new_ship["dir"] = DIRECTIONS[new_dir_index]
+        new_ship["dir"] = turn(ship["dir"], step)
 
     return new_ship
 
