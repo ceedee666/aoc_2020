@@ -1,0 +1,20 @@
+== Day 12
+
+This solution is written in python.
+
+The following libraries are used to implement the solution::
+* Typer (https://typer.tiangolo.com/) to generate a nice command line interface
+* pathlib (https://docs.python.org/3/library/pathlib.html) to work with file paths
+
+=== Idea
+
+The idea for part one is to simply calculate the modulo of arrival time and the
+bus ID. The waiting time is the bus id minus the moduli. The smallest value is the solution.
+
+=== What I learned
+
+
+=== How to run
+
+Run using:
+`$ python day13.py --help`
