@@ -8,16 +8,13 @@ The following libraries are used to implement the solution::
 
 === Idea
 
-The idea for part one is to simply calculate the modulo of arrival time and the
-bus ID. The waiting time is the bus id minus the moduli. The smallest value is the solution.
-
-I needed some googling to find out that the Chinese Remainder Theorem can be used to solve this puzzle. After that I reread the section in this book http://weitz.de/KMFI/ to beeing able to implement it. 
+The idea for part one was simply to convert the integers to binary and apply the mask.
+the f-strings in python a pretty helpful for this.
 
 === What I learned
 
-Got reminded of the Chinese Remainder Theorem.
 
 === How to run
 
 Run using:
-`$ python day13.py --help`
+`$ python day14 --help`
