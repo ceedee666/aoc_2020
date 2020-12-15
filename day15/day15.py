@@ -42,8 +42,8 @@ def init_game(init_string):
     return game
 
 
-def play_2020_turns(game):
-    while game["turn"] < 2020:
+def play_n_turns(n, game):
+    while game["turn"] < n:
         game = play_turn(game)
     return game
 
@@ -51,7 +51,7 @@ def play_2020_turns(game):
 @app.command()
 def part1():
     game = init_game(INPUT)
-    result = play_2020_turns(game)
+    result = play_n_turns(2020, game)
 
     number = result["number"]
     print(f"The 2020th number is {number}.")
@@ -59,7 +59,12 @@ def part1():
 
 @app.command()
 def part2():
-    print()
+    game = init_game(INPUT)
+    i = 30_000_000
+    result = play_n_turns(i, game)
+
+    number = result["number"]
+    print(f"The {i}th number is {number}.")
 
 
 if __name__ == "__main__":

@@ -9,9 +9,11 @@ The following libraries are used to implement the solution::
 === Idea
 
 The idea for part one is to use a dict to store the memory of the game. 
+The idea for part two is brute force. Fortunately, this worked....
 
 === What I learned
 
+I really start to like to represent data in python as dicts.
 
 === How to run
 
