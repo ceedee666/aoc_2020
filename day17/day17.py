@@ -19,34 +19,53 @@ def read_input_file(input_file_path):
     return list(map(lambda l: l.strip(), lines))
 
 
-def parse_grid(lines):
-    grid = init_empty_grid(len(lines), len(lines[0]), 1)
+def parse_grid(lines, dim=3):
+    if dim == 3:
+        grid = init_empty_grid(len(lines), len(lines[0]), 1, 0)
+    else:
+        grid = init_empty_grid(len(lines), len(lines[0]), 1, 1)
 
     for i, l in enumerate(lines):
         for j, c in enumerate(l):
             if c == ACTIVE:
-                grid[i][j][0] = ACTIVE
+                if dim == 3:
+                    grid[i][j][0] = ACTIVE
+                else:
+                    grid[i][j][0][0] = ACTIVE
 
     return grid
 
 
-def init_empty_grid(size_x, size_y, size_z):
-    return [[[
-        INACTIVE for _ in range(size_z)]
-        for _ in range(size_y)]
-        for _ in range(size_x)]
+def init_empty_grid(size_x, size_y, size_z, size_w):
+    if size_w == 0:
+        return [[[
+            INACTIVE for _ in range(size_z)]
+            for _ in range(size_y)]
+            for _ in range(size_x)]
+    else:
+        return [[[[
+            INACTIVE for _ in range(size_w)]
+            for _ in range(size_w)]
+            for _ in range(size_y)]
+            for _ in range(size_x)]
 
 
 def neighbour_coordinates(coordinate):
-    x, y, z = coordinate
-
-    coordinates = [(a, b, c)
-                   for a in range(x-1, x+2)
-                   for b in range(y-1, y+2)
-                   for c in range(z-1, z+2)]
+    if len(coordinate) == 3:
+        x, y, z = coordinate
+        coordinates = [(a, b, c)
+                       for a in range(x-1, x+2)
+                       for b in range(y-1, y+2)
+                       for c in range(z-1, z+2)]
+    else:
+        x, y, z, w = coordinate
+        coordinates = [(a, b, c, d)
+                       for a in range(x-1, x+2)
+                       for b in range(y-1, y+2)
+                       for c in range(z-1, z+2)
+                       for d in range(w-1, w+2)]
 
     coordinates.remove(coordinate)
-
     return coordinates
 
 
@@ -58,38 +77,43 @@ def active_neighbours(coordinate, grid):
 
 def all_coordinates(grid):
     coordinates = []
-    for x in range(len(grid)):
-        for y in range(len(grid[x])):
-            for z in range(len(grid[x][y])):
-                coordinates.append((x, y, z))
+    if type(grid[0][0][0]) is list:
+        for x in range(len(grid)):
+            for y in range(len(grid[x])):
+                for z in range(len(grid[x][y])):
+                    for w in range(len(grid[x][y][z])):
+                        coordinates.append((x, y, z, w))
+    else:
+        for x in range(len(grid)):
+            for y in range(len(grid[x])):
+                for z in range(len(grid[x][y])):
+                    coordinates.append((x, y, z))
     return coordinates
 
 
 def active_cell_coordinates(grid):
-    return list(filter(lambda c: grid[c[0]][c[1]][c[2]] == ACTIVE, all_coordinates(grid)))
+    return list(filter(lambda c: cell_state(c, grid) == ACTIVE, all_coordinates(grid)))
 
 
 def cell_state(coordinate, grid):
-    x, y, z = coordinate
+    if len(coordinate) == 3:
+        x, y, z = coordinate
+        if x < 0 or y < 0 or z < 0:
+            state = INACTIVE
+        elif x >= len(grid) or y >= len(grid[0]) or z >= len(grid[0][0]):
+            state = INACTIVE
+        else:
+            state = grid[x][y][z]
+    else:
+        x, y, z, w = coordinate
+        if x < 0 or y < 0 or z < 0 or w < 0:
+            state = INACTIVE
+        elif x >= len(grid) or y >= len(grid[0]) or z >= len(grid[0][0]) or w >= len(grid[0][0][0]):
+            state = INACTIVE
+        else:
+            state = grid[x][y][z][w]
 
-    if x < 0 or y < 0 or z < 0:
-        return INACTIVE
-    if x >= len(grid) or y >= len(grid[0]) or z >= len(grid[0][0]):
-        return INACTIVE
-
-    return grid[x][y][z]
-
-
-def print_grid(grid):
-    for z in range(len(grid[0][0])):
-        print("-----------------------------------")
-        print(f"Z = {z}")
-
-        for x in range(len(grid)):
-            line = ""
-            for y in range(len(grid[0])):
-                line += grid[x][y][z]
-            print(line)
+    return state
 
 
 def execute_step(grid):
@@ -101,20 +125,28 @@ def execute_step(grid):
       the cell becomes active.
     '''
 
-    new_grid = init_empty_grid(
-        len(grid) + 2, len(grid[0]) + 2, len(grid[0][0]) + 2)
+    if type(grid[0][0][0]) is list:
+        new_grid = init_empty_grid(
+            len(grid) + 2, len(grid[0]) + 2, len(grid[0][0]) + 2, len(grid[0][0][0]) +2)
+    else:
+        new_grid = init_empty_grid(
+            len(grid) + 2, len(grid[0]) + 2, len(grid[0][0]) + 2, 0)
 
     for c in all_coordinates(new_grid):
-        x, y, z = c
+        if len(c) == 3:
+            old_coordinate = (c[0]-1, c[1]-1, c[2]-1)
+        else:
+            old_coordinate = (c[0]-1, c[1]-1, c[2]-1, c[3]-1)
 
-        old_coordinate = (x-1, y-1, z-1)
         state = cell_state(old_coordinate, grid)
         active_neighbours_count = active_neighbours(old_coordinate, grid)
 
-        if state == ACTIVE and active_neighbours_count in [2, 3]:
-            new_grid[x][y][z] = ACTIVE
-        elif state == INACTIVE and active_neighbours_count == 3:
-            new_grid[x][y][z] = ACTIVE
+        if (state == ACTIVE and active_neighbours_count in [2, 3])\
+           or (state == INACTIVE and active_neighbours_count == 3):
+            if len(c) == 3:
+                new_grid[c[0]][c[1]][c[2]] = ACTIVE
+            else:
+                new_grid[c[0]][c[1]][c[2]][c[3]] = ACTIVE
 
     return new_grid
 
@@ -122,6 +154,14 @@ def execute_step(grid):
 @app.command()
 def part1(input_file: str):
     grid = parse_grid(read_input_file(input_file))
+    for _ in range(6):
+        grid = execute_step(grid)
+    print(f"After six cycles {len(active_cell_coordinates(grid))} cubes are active.")
+
+
+@app.command()
+def part2(input_file: str):
+    grid = parse_grid(read_input_file(input_file), 4)
     for _ in range(6):
         grid = execute_step(grid)
     print(f"After six cycles {len(active_cell_coordinates(grid))} cubes are active.")

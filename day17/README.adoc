@@ -13,6 +13,9 @@ The example input was really confusing. Therefore I at first though is was wrong
 After a failed try to only represent the active cells in a dict I simply went for the
 3 dimensional list.
 
+For part two I simply added teh 4th dimiension to the code using varius `if` statements.
+The code is now quite ugly...
+
 === What I learned
 
 Don't try to be to clever. Go for the simplest solution first!
