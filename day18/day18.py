@@ -15,7 +15,7 @@ def read_input_file(input_file_path):
     return [l.strip().replace(" ", "") for l in lines]
 
 
-def to_rpn(expression):
+def to_rpn(expression, precedence):
     result = ""
     stack = deque()
 
@@ -24,7 +24,7 @@ def to_rpn(expression):
             result += c
         else:
             if c in "+-*/":
-                while stack and stack[-1] != '(':
+                while stack and stack[-1] != '(' and precedence[c] <= precedence[stack[-1]]:
                     result += stack.pop()
                 stack.append(c)
 
@@ -60,8 +60,18 @@ def eval_rpn(expression):
 @app.command()
 def part1(input_file: str):
     expressions = read_input_file(input_file)
-    result = sum(map(lambda e: eval_rpn(to_rpn(e)), expressions))
+    precedence = {"+": 0, "-": 0, "*": 0, "/": 0}
+    result = sum(map(lambda e: eval_rpn(to_rpn(e, precedence)), expressions))
     print(f"The sum of the resulting values is {result}")
+
+
+@app.command()
+def part2(input_file: str):
+    expressions = read_input_file(input_file)
+    precedence = {"+": 1, "-": 0, "*": 0, "/": 0}
+    result = sum(map(lambda e: eval_rpn(to_rpn(e, precedence)), expressions))
+    print(f"The sum of the resulting values is {result}")
+
 
 
 if __name__ == "__main__":
