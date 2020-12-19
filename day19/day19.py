@@ -51,5 +51,27 @@ def part1(input_file: str):
     print(f"{matching_msg_count} messages match the rules.")
 
 
+@app.command()
+def part2(input_file: str):
+    rule_strings, messages = read_input_file(input_file)
+    rules = parse_rules(rule_strings)
+    regex = build_regex("0", rules)
+
+    matching_msg_count = len(list(filter(
+                         lambda m: re.fullmatch(regex, m), messages)))
+
+    regex_42 = build_regex("42", rules)
+    regex_31 = build_regex("31", rules)
+
+    regex_part2 = "|".join(
+            f"(?:{regex_42}){{{i + 1},}}(?:{regex_31}){{{i}}}"
+            for i in range(1, 100))
+
+    matching_msg_count += len(list(filter(
+                          lambda m: re.fullmatch(regex_part2, m), messages)))
+
+    print(f"{matching_msg_count} messages match the rules.")
+
+
 if __name__ == "__main__":
     app()
