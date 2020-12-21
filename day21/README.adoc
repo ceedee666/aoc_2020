@@ -14,7 +14,8 @@ The idea for part one is to use sets to find ingredients that cannot be allergen
 
 === What I learned
 
-I learned how useful comprehensions are to not only create lists but also sets of dicts.
+* I learned how useful comprehensions are to not only create lists but also sets of dicts.
+* Useign mutable sets you can really shot yourself in the foot!
 
 === How to run
 
