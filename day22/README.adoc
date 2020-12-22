@@ -8,9 +8,12 @@ The following libraries are used to implement the solution::
 
 === Idea
 
+Use lists to represnet the decks. Part one was straight forward. Had a little error in the
+recursion in part two.
 
 === What I learned
 
+Recursions are sometimes difficult.
 
 === How to run
 

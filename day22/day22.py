@@ -22,8 +22,11 @@ def read_input_file(input_file_path):
     return p1, p2
 
 
-def game_ended(p1, p2):
-    return len(p1) == 0 or len(p2) == 0
+def game_ended(p1, p2, end_game=False):
+    if end_game:
+        return True
+    else:
+        return len(p1) == 0 or len(p2) == 0
 
 
 def play_round(p1, p2):
@@ -38,10 +41,47 @@ def play_round(p1, p2):
     return new_p1, new_p2
 
 
-def play(p1, p2):
+def play_combat(p1, p2):
     while not game_ended(p1, p2):
         p1, p2 = play_round(p1, p2)
     return p1, p2
+
+
+def play_recursive_combat(p1, p2):
+    end_game = False
+    previous_decks = {"p1": [], "p2": []}
+
+    while not game_ended(p1, p2, end_game):
+        p1, p2, end_game, previous_decks = play_recursive_round(p1, p2, previous_decks)
+
+    if len(p2) == 0 or end_game:
+        winner = "p1"
+    else:
+        winner = "p2"
+
+    return p1, p2, winner
+
+
+def play_recursive_round(p1, p2, previous_decks):
+    if p1 in previous_decks["p1"] or p2 in previous_decks["p2"]:
+        return p1, p2, True, previous_decks
+    else:
+        previous_decks["p1"].append(p1)
+        previous_decks["p2"].append(p2)
+
+        c1, *new_p1 = p1
+        c2, *new_p2 = p2
+
+        if c1 <= len(new_p1) and c2 <= len(new_p2):
+            p1, p2, winner = play_recursive_combat(new_p1[:c1], new_p2[:c2])
+            if winner == "p1":
+                new_p1 += [c1, c2]
+            else:
+                new_p2 += [c2, c1]
+        else:
+            new_p1, new_p2 = play_round(p1, p2)
+
+        return new_p1, new_p2, "", previous_decks
 
 
 def calculate_score(deck):
@@ -51,7 +91,7 @@ def calculate_score(deck):
 @app.command()
 def part1(input_file: str):
     p1, p2 = read_input_file(input_file)
-    p1, p2 = play(p1, p2)
+    p1, p2 = play_combat(p1, p2)
 
     if len(p1) > 0:
         score = calculate_score(p1)
@@ -59,6 +99,21 @@ def part1(input_file: str):
         score = calculate_score(p2)
 
     print(f"The winnig score for the game is {score}.")
+
+
+@app.command()
+def part2(input_file: str):
+    p1, p2 = read_input_file(input_file)
+    p1, p2, _ = play_recursive_combat(p1, p2)
+
+    if len(p1) > 0:
+        score = calculate_score(p1)
+    else:
+        score = calculate_score(p2)
+
+    print(f"Player 1's deck: {p1}")
+    print(f"Player 2's deck: {p2}")
+    print(f"The winnig score for the game of recursive combat is {score}.")
 
 
 if __name__ == "__main__":
