@@ -7,71 +7,80 @@ app = typer.Typer()
 INPUT = list(map(int, "974618352"))
 
 
-def pickup(idx, cups):
-    if idx + 1 == len(cups):
-        pick = cups[:3]
-    elif idx + 4 < len(cups):
-        pick = cups[idx+1:idx+4]
+def init_linked_list(cups, pad):
+    ll = ["NOT USED"] + [i+1 for i in range(1, pad+1)]
+
+    for i in range(len(cups)-1):
+        ll[cups[i]] = cups[i+1]
+
+    if len(cups) == pad:
+        ll[cups[-1]] = cups[0]
     else:
-        pick = cups[idx+1:]
-        rest = 3 - len(pick)
-        pick += cups[:rest]
-    return pick
+        ll[cups[-1]] = len(cups)+1
+        ll[-1] = 1
+    head = cups[0]
+    return head, ll
 
 
-def shift_cups(idx, cup, cups):
-    new_idx = cups.index(cup)
-    shift = new_idx - idx
-    if shift != 0:
-        new_cups = cups[shift:]+cups[:shift]
-    else:
-        new_cups = cups
-    return new_cups
+def play_crab_cups_round(head, ll):
+    dest = head-1 if head > 1 else len(ll)-1
+
+    nc1 = ll[head]
+    nc2 = ll[nc1]
+    nc3 = ll[nc2]
+
+    while dest in [nc1, nc2, nc3]:
+        dest = dest-1 if dest > 1 else len(ll)-1
+
+    ll[head] = ll[nc3]
+
+    dest_nc = ll[dest]
+    ll[dest] = nc1
+    ll[nc3] = dest_nc
+
+    return ll[head], ll
 
 
-def play_crab_cups_round(idx, cups):
-    min_cup_value = min(cups)
-    max_cup_value = max(cups)
+def cups_list(head, ll):
+    result = []
+    current = head
 
-    current_cup = cups[idx]
-    destination = current_cup - 1 if current_cup > min_cup_value else max_cup_value
-    pick = pickup(idx, cups)
+    while len(result) < len(ll)-1:
+        result.append(current)
+        current = ll[current]
 
-    while destination in pick:
-        destination = destination - 1 if destination > min_cup_value else max_cup_value
-    new_cups = [c for c in cups if c not in pick]
-
-    dest_idx = new_cups.index(destination)
-    new_cups = new_cups[:dest_idx+1] + pick + new_cups[dest_idx+1:]
-    new_cups = shift_cups(idx, current_cup, new_cups)
-
-    return new_cups
+    return result
 
 
-def play_crab_cups(cups, pad, rounds=100):
-    if len(cups) < pad:
-        cups = cups + list(range(max(cups)+1, pad +1))
+def play_crab_cups(cups, pad, rounds):
+    """
+    Use list as a linked list. The index is the label of the cups,
+    the value is the next cup.
+    """
+    head, ll = init_linked_list(cups, pad)
+    for _ in range(rounds):
+        head, ll = play_crab_cups_round(head, ll)
 
-    for i in range(rounds):
-        cups = play_crab_cups_round(i % len(cups), cups)
-    return cups
+    print(len(ll))
+    return head, ll
 
 
 @app.command()
 def part1():
-    cups = play_crab_cups(INPUT)
-    idx = cups.index(1)
-    result = "".join(list(map(str, cups[idx+1:] + cups[:idx])))
+    head, ll = play_crab_cups(INPUT, len(INPUT), 100)
+    c = cups_list(head, ll)
+    idx = c.index(1)
+    result = "".join(list(map(str, c[idx+1:] + c[:idx])))
     print(f"The labels after cup 1 are: {result}")
 
 
 @app.command()
 def part2():
-    cups = INPUT + list(range(max(INPUT), 1_000_001))
-    cups = play_crab_cups(cups, 10_000_000)
-    idx = cups.index(1)
+    head, ll = play_crab_cups(INPUT, 1_000_000, 10_000_000)
+    c = cups_list(head, ll)
+    idx = c.index(2)
 
-    print(f"The result for part 2 is: {cups[idx+1] * cups[idx+2]}")
+    print(f"The result for part 2 is: {c[idx+1] * c[idx+2]}")
 
 
 if __name__ == "__main__":
