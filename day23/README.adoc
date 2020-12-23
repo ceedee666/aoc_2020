@@ -1,0 +1,18 @@
+== Day 23
+
+This solution is written in python.
+
+The following libraries are used to implement the solution::
+
+=== Idea
+
+I implemented part one using simple list with lots of searches. 
+This was not god enough for part two. So I reimplemented it using the list as a linked list.
+
+=== What I learned
+
+
+=== How to run
+
+Run using:
+`$ python day23 --help`
