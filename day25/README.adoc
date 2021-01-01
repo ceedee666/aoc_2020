@@ -1,0 +1,18 @@
+== Day 25
+
+This solution is written in python.
+
+The following libraries are used to implement the solution::
+* none for this puzzle 
+
+=== Idea
+
+* Just brute force for part one of the puzzle. 
+
+=== What I learned
+
+
+=== How to run
+
+Run using:
+`$ python day25 --help`
